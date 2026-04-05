@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Gantenk Agry Calc - Tani Pintar All-in-One</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🌾 Gantenk Agry Calc</h1>
+        <p>Luas Lahan • Kebutuhan Semprot • Kamera & Solusi Penyakit</p>
+    </div>
+    <div class="content">
+        <div class="form-group">
+            <label>🌱 Pilih Jenis Tanaman:</label>
+            <select id="pilihTanaman">
+                <option value="">-- Pilih Tanaman --</option>
+            </select>
+        </div>
+        <div id="panelHama" class="info-panel" style="display: none;">
+            <strong>🐛 Hama / Penyakit umum (klik untuk rekomendasi):</strong>
+            <div id="daftarHama" class="hama-list"></div>
+        </div>
+
+        <div class="form-group">
+            <label>🧪 Pilih Pestisida (relevan):</label>
+            <select id="pilihObat">
+                <option value="custom">-- Pilih atau atur manual --</option>
+            </select>
+            <div id="infoTargetObat" class="info-panel" style="margin-top: 8px;">
+                💡 Target penyakit: akan tampil setelah pilih pestisida
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>💧 Dosis (ml per Liter air):</label>
+            <input type="number" id="dosis" step="0.1" value="2.0">
+        </div>
+
+        <div class="form-group">
+            <label>🪣 Ukuran Tangki (Liter):</label>
+            <input type="number" id="tangki" step="1" value="16">
+        </div>
+
+        <div class="info-panel" style="background:#e3f2fd; border-left-color:#2e7d32;">
+            <strong>📐 Luas Lahan & Kebutuhan Total</strong>
+            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                <input type="number" id="luas" placeholder="Luas" step="0.1" style="flex:2;">
+                <select id="satuanLuas" style="flex:1;">
+                    <option value="m2">m²</option>
+                    <option value="are">Are</option>
+                    <option value="ha">Hektar</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+                <label>📏 Volume semprot rekomendasi (Liter/Hektar):</label>
+                <input type="number" id="volPerHa" placeholder="Misal: 400 L/ha" value="400" step="10">
+                <p style="font-size:0.7rem; margin-top:4px;">*Standar semprot tanaman dewasa: 300-600 L/ha</p>
+            </div>
+            <div id="hasilLahan" class="hasil-card" style="margin-top:10px; background:#dff0fa;">
+                <span id="totalKebutuhan">0 ml</span> total pestisida<br>
+                <span id="jumlahTangki">0 tangki</span> (dibulatkan ke atas)
+            </div>
+        </div>
+
+        <div class="info-panel" style="background:#fff8e1;">
+            <label>📏 Volume 1 tutup botol Anda (ml):</label>
+            <input type="number" id="volTutup" step="0.5" value="12.5">
+            <p style="font-size:0.7rem;">🔧 Ukur dengan spuit untuk akurasi maksimal</p>
+        </div>
+
+        <button id="btnHitung">🔁 Hitung Ulang Semua</button>
+
+        <div class="camera-box">
+            <video id="video" autoplay playsinline style="width:100%; border-radius:20px;"></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <div class="camera-buttons">
+                <button id="btnAmbilFoto">📸 Ambil Foto Tanaman</button>
+                <button id="btnResetKamera">🔄 Reset Kamera</button>
+            </div>
+            <div id="hasilFoto" style="margin-top:12px; text-align:left; color:white; font-size:0.8rem;"></div>
+        </div>
+
+        <div id="rekomendasiPenyakit" class="rekomen-penyakit" style="display:none;">
+            <strong>🌿 Rekomendasi Solusi :</strong><br>
+            <span id="teksRekomendasi"></span>
+        </div>
+
+        <div class="catatan" style="font-size:0.7rem; text-align:center; margin-top:20px;">
+            ✅ Semua perhitungan berdasarkan dosis × tangki.<br>
+            📌 Solusi penyakit berdasarkan database & pilihan tanaman. Kamera untuk dokumentasi + pilih gejala manual.
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
