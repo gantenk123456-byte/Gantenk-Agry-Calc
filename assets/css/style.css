@@ -1,0 +1,185 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    background: #eef5e9;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 650px;
+    width: 100%;
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #1e5622, #2e7d32);
+    padding: 22px 24px;
+    color: white;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.header p {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    margin-top: 6px;
+}
+
+.content {
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 700;
+    color: #1a3b1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+select, input, button {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #cce3cc;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    background: #fefef8;
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+select:focus, input:focus {
+    border-color: #2e7d32;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(46,125,50,0.2);
+}
+
+button {
+    background: #2e7d32;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background: #1b5e20;
+    transform: scale(0.98);
+}
+
+.info-panel {
+    background: #f4fbf2;
+    border-radius: 20px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    border-left: 6px solid #fbc02d;
+    font-size: 0.85rem;
+}
+
+.hama-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.hama-tag {
+    background: #e0f0dd;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #1b4d1b;
+    cursor: pointer;
+}
+
+.badge {
+    background: #fbc02d;
+    color: #2c4d1e;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.hasil-card {
+    background: #eaf5e8;
+    border-radius: 24px;
+    padding: 18px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+.jumlah-ml {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2e7d32;
+}
+
+.camera-box {
+    background: #263238;
+    border-radius: 24px;
+    padding: 16px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+video, canvas {
+    width: 100%;
+    border-radius: 20px;
+    background: black;
+}
+
+.camera-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.rekomen-penyakit {
+    background: #fff3e0;
+    border-radius: 20px;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+}
+
+.satuan-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.satuan-group select {
+    width: 40%;
+}
+
+hr {
+    margin: 20px 0;
+    border-color: #d9e8d6;
+}
