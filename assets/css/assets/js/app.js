@@ -5,9 +5,9 @@ const databaseTanaman = [
     { nama: "Cabai", hamaPenyakit: ["Antraknosa", "Kutu daun", "Thrips", "Virus kuning", "Busuk buah"] },
     { nama: "Tomat", hamaPenyakit: ["Antraknosa", "Kutu kebul", "Layu bakteri", "Bercak daun", "Ulat buah"] },
     { nama: "Bawang Merah", hamaPenyakit: ["Bercak ungu (Alternaria)", "Ulat bawang", "Tepung", "Busuk umbi"] },
+    { nama: "Bawang Putih", hamaPenyakit: ["Bercak ungu", "Busuk putih (Sclerotium)", "Thrips", "Layu Fusarium", "Ulat grayak"] },
     { nama: "Kentang", hamaPenyakit: ["Hawar daun (Phytophthora)", "Kutu daun", "Penggerek umbi", "Virus"] },
     { nama: "Kedelai", hamaPenyakit: ["Ulat grayak", "Penggerek polong", "Karat daun", "Bercak daun"] },
-    { nama: "Tebu", hamaPenyakit: ["Penggerek batang", "Ularat", "Luka api", "Hawar merah"] },
     { nama: "Kelapa Sawit", hamaPenyakit: ["Ulat kantong", "Kumbang tanduk", "Busuk pangkal batang", "Ganoderma"] },
     { nama: "Kopi", hamaPenyakit: ["Penggerek buah kopi (PBKo)", "Karat daun", "Bubuk buah", "Nematoda"] },
     { nama: "Kakao", hamaPenyakit: ["Busuk buah (Phytophthora)", "Penggerek buah", "Kutu loncat", "Vaskular streak"] },
@@ -20,16 +20,20 @@ const solusiPenyakit = {
     "Penggerek batang": "Curacron atau Regent 0.4 ml/L. Semprotkan pada saat telur menetas.",
     "Hawar daun": "Amistar Top atau Dithane 2.5 ml/L. Hindari kelembaban tinggi.",
     "Ulat grayak": "Curacron 1.5 ml/L atau Decis 0.8 ml/L. Lakukan di pagi/sore hari.",
-    "Kutu daun": "Decis 0.8 ml/L atau Confidor 0.5 ml/L. Semprot merata.",
-    "Thrips": "Decis atau Confidor. Ulangi 5-7 hari.",
-    "Virus kuning": "Kendalikan vektor (kutu kebul) dengan Decis. Cabut tanaman sakit.",
-    "Busuk buah": "Fungisida Antracol 2 ml/L. Kurangi kelembaban.",
-    "Bercak ungu (Alternaria)": "Score 0.6 ml/L atau Dithane. Rotasi tanaman.",
-    "Karat daun": "Score atau Amistar Top 1 ml/L.",
-    "CVPD (Huanglongbing)": "Tidak ada obat. Potong dan bakar tanaman terserang. Kontrol vektor (kutu loncat) dengan Confidor.",
-    "Ganoderma": "Belum ada fungisida efektif. Sanitasi lahan, aplikasi Trichoderma.",
+    "Bercak ungu": "Gunakan Score 0.6 ml/L atau Antracol 2 ml/L. Perbaiki drainase lahan agar tidak lembab.",
+    "Busuk putih (Sclerotium)": "Berikan Trichoderma pada tanah saat olah lahan. Cabut tanaman yang busuk agar tidak menular.",
+    "Layu Fusarium": "Pastikan pH tanah netral (6-7) dengan pemberian kapur dolomit. Gunakan fungisida sistemik.",
+    "Kutu daun": "Decis 0.8 ml/L atau Confidor 0.5 ml/L.",
     "Default": "Konsultasikan dengan penyuluh setempat. Pastikan identifikasi tepat."
 };
+
+// ======================= DATABASE DIAGNOSA HARA (KONDISI TANAH) =======================
+const diagnosaHara = [
+    { gejala: "Daun bawah kuning, batang pendek", diagnosa: "Kurang Nitrogen (N)", solusi: "Berikan pupuk Urea atau ZA." },
+    { gejala: "Pinggiran daun coklat seperti terbakar", diagnosa: "Kurang Kalium (K)", solusi: "Berikan pupuk KCL atau NPK." },
+    { gejala: "Warna daun ungu tua/kemerahan", diagnosa: "Kurang Fosfor (P)", solusi: "Berikan pupuk SP-36." },
+    { gejala: "Urat daun hijau tapi daun menguning", diagnosa: "Kurang Magnesium (Mg)", solusi: "Berikan Dolomit/Kieserit." }
+];
 
 const databasePestisida = [
     { id: "antracol", nama: "Antracol 70 WP", jenis: "Fungisida", dosis_ml_per_liter: 2.0, target: "Antraknosa, bercak daun, busuk buah" },
@@ -58,7 +62,7 @@ const luasInput = document.getElementById('luas');
 const satuanLuas = document.getElementById('satuanLuas');
 const volPerHa = document.getElementById('volPerHa');
 
-// Kamera
+// Kamera & Rekomendasi
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const btnAmbil = document.getElementById('btnAmbilFoto');
@@ -77,6 +81,7 @@ databaseTanaman.forEach(t => {
     selectTanaman.appendChild(opt);
 });
 
+// Logic Relevansi
 function isRelevan(pestisida, tanamanNama) {
     const tanaman = databaseTanaman.find(t => t.nama === tanamanNama);
     if (!tanaman) return true;
@@ -94,19 +99,17 @@ function updatePestisidaDropdown(tanamanNama) {
         let opt = document.createElement('option');
         opt.value = p.id;
         opt.textContent = `${p.nama} (${p.jenis}) - ${p.dosis_ml_per_liter} ml/L`;
-        opt.dataset.dosis = p.dosis_ml_per_liter;
-        opt.dataset.target = p.target;
         selectObat.appendChild(opt);
     });
     if (prev !== 'custom' && filtered.some(p => p.id === prev)) {
         selectObat.value = prev;
-        selectObat.dispatchEvent(new Event('change'));
     } else {
         inputDosis.value = '';
         infoTargetObat.innerHTML = "💡 Pilih pestisida untuk rekomendasi dosis.";
     }
 }
 
+// Event Handlers
 function onTanamanChange() {
     const tanaman = selectTanaman.value;
     if (!tanaman) {
@@ -116,18 +119,13 @@ function onTanamanChange() {
     }
     const obj = databaseTanaman.find(t => t.nama === tanaman);
     if (obj) {
-        daftarHamaDiv.innerHTML = obj.hamaPenyakit.map(h => `<span class="hama-tag" data-penyakit="${h}">🐛 ${h}</span>`).join('');
+        // Tampilkan Hama + Tombol Diagnosa Hara
+        let haraHtml = `<div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;"><small>Atau cek gejala tanah/hara:</small><br>`;
+        haraHtml += diagnosaHara.map(d => `<span class="hara-tag" onclick="tampilkanSolusiHara('${d.diagnosa}')">🌱 ${d.gejala}</span>`).join('') + `</div>`;
+        
+        daftarHamaDiv.innerHTML = obj.hamaPenyakit.map(h => `<span class="hama-tag" onclick="tampilkanSolusiPenyakit('${h}')">🐛 ${h}</span>`).join('') + haraHtml;
         panelHama.style.display = 'block';
-        document.querySelectorAll('.hama-tag').forEach(tag => {
-            tag.addEventListener('click', (e) => {
-                let penyakit = tag.dataset.penyakit;
-                tampilkanSolusiPenyakit(penyakit);
-            });
-        });
         updatePestisidaDropdown(tanaman);
-    } else {
-        panelHama.style.display = 'none';
-        updatePestisidaDropdown(null);
     }
 }
 
@@ -135,82 +133,85 @@ function onPestisidaChange() {
     const id = selectObat.value;
     if (id === 'custom') {
         infoTargetObat.innerHTML = "💡 Mode manual. Isi dosis sendiri.";
-        return;
-    }
-    const p = databasePestisida.find(o => o.id === id);
-    if (p) {
-        inputDosis.value = p.dosis_ml_per_liter;
-        infoTargetObat.innerHTML = `🎯 Target: ${p.target}<br><span class="badge">${p.jenis}</span> Dosis rekomendasi: ${p.dosis_ml_per_liter} ml/L`;
+    } else {
+        const p = databasePestisida.find(o => o.id === id);
+        if (p) {
+            inputDosis.value = p.dosis_ml_per_liter;
+            infoTargetObat.innerHTML = `🎯 Target: ${p.target}<br><span class="badge">${p.jenis}</span> Rekomendasi: ${p.dosis_ml_per_liter} ml/L`;
+        }
     }
     hitungSemua();
 }
 
+// FUNGSI UTAMA KALKULASI & VALIDASI
 function hitungSemua() {
-    let dosis = parseFloat(inputDosis.value);
-    let tangki = parseFloat(inputTangki.value);
-    let volTutup = parseFloat(inputVolTutup.value);
-    
-    if (isNaN(dosis) || dosis <= 0) dosis = 0;
-    if (isNaN(tangki) || tangki <= 0) tangki = 0;
-    if (isNaN(volTutup) || volTutup <= 0) volTutup = 12.5;
-    
-    let perTangkiMl = dosis * tangki;
-    let luas = parseFloat(luasInput.value);
+    let dosis = parseFloat(inputDosis.value) || 0;
+    let tangki = parseFloat(inputTangki.value) || 0;
+    let volTutup = parseFloat(inputVolTutup.value) || 12.5;
+    let luas = parseFloat(luasInput.value) || 0;
     let satuan = satuanLuas.value;
-    let volPerHaVal = parseFloat(volPerHa.value);
-    
-    if (isNaN(volPerHaVal) || volPerHaVal <= 0) volPerHaVal = 400;
-    
+    let volPerHaVal = parseFloat(volPerHa.value) || 400;
+
+    // --- LOGIKA PERINGATAN OVERDOSIS ---
+    let warningDiv = document.getElementById('warningDosis');
+    if (!warningDiv) {
+        warningDiv = document.createElement('div');
+        warningDiv.id = 'warningDosis';
+        inputDosis.parentNode.insertBefore(warningDiv, inputDosis.nextSibling);
+    }
+
+    if (dosis > 5) {
+        warningDiv.innerHTML = `<div style="color:red; font-weight:bold; margin-top:5px; padding:8px; border:1px solid red; border-radius:8px; background:#fff0f0;">⚠️ Peringatan: Dosis > 5ml/L berisiko membakar daun (Plasmolisis)!</div>`;
+    } else {
+        warningDiv.innerHTML = "";
+    }
+
+    // Perhitungan Lahan
     let luasHa = 0;
-    if (!isNaN(luas) && luas > 0) {
+    if (luas > 0) {
         if (satuan === 'm2') luasHa = luas / 10000;
         else if (satuan === 'are') luasHa = luas / 100;
         else luasHa = luas;
     }
-    
+
+    let perTangkiMl = dosis * tangki;
     let totalKebutuhanMl = luasHa * volPerHaVal * dosis;
-    let jumlahTangki = luasHa > 0 ? Math.ceil(totalKebutuhanMl / perTangkiMl) : 0;
-    
-    if (isNaN(totalKebutuhanMl)) totalKebutuhanMl = 0;
-    
+    let jumlahTangki = totalKebutuhanMl > 0 ? Math.ceil(totalKebutuhanMl / (perTangkiMl || 1)) : 0;
+
+    // Update UI
     hasilLahanTotal.innerText = totalKebutuhanMl.toFixed(1) + " ml";
     hasilJumlahTangki.innerText = jumlahTangki + " tangki";
-    
-    let jumlahTutupPerTangki = perTangkiMl / volTutup;
+
     let infoTambahan = document.getElementById('infoPerTangki');
-    
     if (!infoTambahan) {
-        let div = document.createElement('div');
-        div.id = 'infoPerTangki';
-        div.style.marginTop = '10px';
-        div.style.fontSize = '0.8rem';
-        document.querySelector('#hasilLahan').appendChild(div);
-        infoTambahan = div;
+        infoTambahan = document.createElement('div');
+        infoTambahan.id = 'infoPerTangki';
+        document.querySelector('#hasilLahan').appendChild(infoTambahan);
     }
-    infoTambahan.innerHTML = `📌 Per tangki: ${perTangkiMl.toFixed(1)} ml ≈ ${jumlahTutupPerTangki.toFixed(1)} tutup (kalibrasi ${volTutup} ml/tutup)`;
+    infoTambahan.innerHTML = `📌 Per tangki: ${perTangkiMl.toFixed(1)} ml ≈ ${(perTangkiMl / volTutup).toFixed(1)} tutup (kalibrasi ${volTutup} ml/tutup)`;
 }
 
-function tampilkanSolusiPenyakit(penyakit) {
+// Fungsi Display Solusi
+window.tampilkanSolusiPenyakit = function(penyakit) {
     let solusi = solusiPenyakit[penyakit] || solusiPenyakit["Default"];
-    teksRekomendasi.innerHTML = `<strong>${penyakit}</strong><br>${solusi}<br>💡 Rekomendasi pestisida: cek daftar pestisida di atas.`;
+    teksRekomendasi.innerHTML = `<div style="color:#2c3e50"><strong>Masalah: ${penyakit}</strong><br>${solusi}</div>`;
     rekomendasiDiv.style.display = 'block';
-}
+};
 
+window.tampilkanSolusiHara = function(diag) {
+    const data = diagnosaHara.find(d => d.diagnosa === diag);
+    teksRekomendasi.innerHTML = `<div style="color:#d35400"><strong>Kondisi: ${data.diagnosa}</strong><br>Saran: ${data.solusi}</div>`;
+    rekomendasiDiv.style.display = 'block';
+};
+
+// Kamera Functions
 async function startCamera() {
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-    }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        hasilFotoDiv.innerHTML = "Fitur kamera tidak didukung di browser ini.";
-        return;
-    }
+    if (stream) stream.getTracks().forEach(track => track.stop());
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: "environment" } 
-        });
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         video.srcObject = stream;
     } catch (err) {
-        hasilFotoDiv.innerHTML = "Gagal akses kamera. Pastikan izin kamera diberikan.";
+        hasilFotoDiv.innerHTML = "<small>Kamera tidak aktif/tidak diizinkan.</small>";
     }
 }
 
@@ -219,27 +220,19 @@ function capturePhoto() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/png');
-    hasilFotoDiv.innerHTML = `<img src="${imageData}" style="width:100%; border-radius:16px; margin-top:8px;"><br><small>Foto terekam. Pilih penyakit dari daftar hama di atas untuk solusi.</small>`;
+    hasilFotoDiv.innerHTML = `<img src="${canvas.toDataURL('image/png')}" style="width:100%; border-radius:12px; margin-top:10px;"><br><small>Foto tersimpan. Klik hama/gejala di atas untuk diagnosa.</small>`;
 }
 
+// Listeners
 btnAmbil.addEventListener('click', capturePhoto);
-btnReset.addEventListener('click', () => {
-    startCamera();
-    hasilFotoDiv.innerHTML = "";
-    rekomendasiDiv.style.display = 'none';
-});
-
+btnReset.addEventListener('click', () => { startCamera(); hasilFotoDiv.innerHTML = ""; rekomendasiDiv.style.display = 'none'; });
 selectTanaman.addEventListener('change', onTanamanChange);
 selectObat.addEventListener('change', onPestisidaChange);
-btnHitung.addEventListener('click', hitungSemua);
-luasInput.addEventListener('input', hitungSemua);
-satuanLuas.addEventListener('change', hitungSemua);
-volPerHa.addEventListener('input', hitungSemua);
-inputDosis.addEventListener('input', hitungSemua);
-inputTangki.addEventListener('input', hitungSemua);
-inputVolTutup.addEventListener('input', hitungSemua);
+[luasInput, satuanLuas, volPerHa, inputDosis, inputTangki, inputVolTutup].forEach(el => {
+    el.addEventListener('input', hitungSemua);
+});
 
+// Init
 function init() {
     startCamera();
     updatePestisidaDropdown(null);
